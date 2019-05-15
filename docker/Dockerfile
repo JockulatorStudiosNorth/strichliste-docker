@@ -7,10 +7,9 @@ RUN apk --no-cache add ca-certificates \
 
 RUN mkdir /source
 WORKDIR /source
-RUN curl -Lo strichliste.tar.gz https://github.com/strichliste/strichliste/releases/download/v1.4.1/strichliste.tar.gz
+RUN curl -Lo strichliste.tar.gz https://github.com/strichliste/strichliste/releases/download/v1.6.2/strichliste.tar.gz
 RUN tar -xf strichliste.tar.gz
 RUN rm -r strichliste.tar.gz
-
 
 FROM alpine:3.8
 
@@ -50,9 +49,7 @@ COPY ./config/php-fpm.conf /etc/php7/php-fpm.conf
 COPY ./config/www.conf /etc/php7/php-fpm.d/www.conf
 COPY ./config/nginx.conf /etc/nginx/nginx.conf
 COPY ./config/default.conf /etc/nginx/conf.d/default.conf
-
-COPY ./data/app.db.empty /source/app.db.example
-COPY ./data/app.db.empty /source/var/app.db
+COPY ./config/.env /source/.env
 
 VOLUME /source/var
 
@@ -60,4 +57,4 @@ WORKDIR /source/public
 EXPOSE 8080
 
 ENTRYPOINT ["/source/entrypoint.sh"]
-CMD nginx && php-fpm7
+CMD nginx && php-fpm7 -F

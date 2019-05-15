@@ -1,24 +1,30 @@
 version: "2"
-# networks:
-    # {your traefik network}:
-        # external: true
+
+volumes:
+    db_data:
+
 services:
     strichliste:
         build:
             context: .
             dockerfile: ./docker/Dockerfile
-        # if you use traefik you can remove the ports section
+        depends_on:
+            - db
+        restart: always
         ports:
             - 8080:8080
         networks:
-            # - traefik_network  # your traefik network
             - default
         volumes:
              - ./config/services.yaml:/source/config/services.yaml
-             - ./data/app.db:/source/var/app.db
-        # Traefik configuration
-        # labels:
-        #     - "traefik.docker.network={your traefik network}"
-        #     - "traefik.frontend.rule=Host:{URL}"
-        #     - "traefik.enable=true"
-        #     - "traefik.port=8080"
+    db:
+        image: mysql:8.0.16
+        command: --default-authentication-plugin=mysql_native_password
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: 927mwq84g6an6X2c
+            MYSQL_DATABASE: strichliste
+            MYSQL_USER: sl-user
+            MYSQL_PASSWORD: 89s7Adb98A7gJJ61
+        volumes:
+            - db_data:/var/lib/mysql
